@@ -43,7 +43,7 @@ class vec3 {
       return std::sqrt(length_squared());
     }
 
-    double lenght_squared() const {
+    double length_squared() const {
       return e[0] * e[0] + e[1] * e[1] + e[2] * e[2]; 
     }
 };
@@ -73,11 +73,11 @@ inline vec3 operator*(double t, const vec3& u) {
   return vec3(u.e[0] * t, u.e[1] * t, u.e[2] * t);
 }
 
-inline vec3 operator*(const vec3& u, double t, ) {
+inline vec3 operator*(const vec3& u, double t) {
   return t * u;
 }
 
-inline vec3 operator/(const vec3& u, double t, ) {
+inline vec3 operator/(const vec3& u, double t) {
   return (1/t) * u;
 }
 
