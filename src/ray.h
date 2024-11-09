@@ -13,7 +13,7 @@ class ray {
       return orig;
     }
 
-    const vec3& direction() {
+    const vec3& direction() const {
       return dir;
     }
 
