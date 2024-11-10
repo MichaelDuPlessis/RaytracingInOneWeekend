@@ -18,6 +18,7 @@ set(SOURCE
   ${SOURCE_DIR}/hittable_list.h
   ${SOURCE_DIR}/rtweekend.h
   ${SOURCE_DIR}/interval.h
+  ${SOURCE_DIR}/camera.h
 )
 
 add_executable(main ${SOURCE})
