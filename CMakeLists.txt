@@ -19,6 +19,7 @@ set(SOURCE
   ${SOURCE_DIR}/rtweekend.h
   ${SOURCE_DIR}/interval.h
   ${SOURCE_DIR}/camera.h
+  ${SOURCE_DIR}/material.h
 )
 
 add_executable(main ${SOURCE})

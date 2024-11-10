@@ -1,11 +1,8 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "color.h"
+#include "material.h"
 #include "hittable.h"
-#include "ray.h"
-#include "rtweekend.h"
-#include "vec3.h"
 
 class camera {
 public:
@@ -70,15 +67,16 @@ private:
     // location of upper left pixel
     auto viewport_upper_left =
         center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
-    pixel00_loc =
-        viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
+    pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
   }
 
   ray get_ray(int i, int j) const {
-    // Create a camera ray from the origin to a randomly sampled point around some locatoin i,j
+    // Create a camera ray from the origin to a randomly sampled point around
+    // some locatoin i,j
 
     auto offset = sample_square();
-    auto pixel_sample = pixel00_loc + ((i + offset.x()) * pixel_delta_u) + ((j + offset.y()) * pixel_delta_v);
+    auto pixel_sample = pixel00_loc + ((i + offset.x()) * pixel_delta_u) +
+                        ((j + offset.y()) * pixel_delta_v);
 
     auto ray_origin = center;
     auto ray_direction = pixel_sample - ray_origin;
@@ -87,7 +85,8 @@ private:
   }
 
   vec3 sample_square() const {
-    // Returns the vector to a random point in the [-.5,-.5]-[+.5,+.5] unit square
+    // Returns the vector to a random point in the [-.5,-.5]-[+.5,+.5] unit
+    // square
     return vec3(random_double() - 0.5, random_double() - 0.5, 0);
   }
 
@@ -95,11 +94,15 @@ private:
     if (depth <= 0) {
       return color(0, 0, 0);
     }
-     
+
     hit_record rec;
     if (world.hit(r, interval(0.001, infinity), rec)) {
-      vec3 direction = rec.normal + random_unit_vector();
-      return 0.1 * ray_color((ray(rec.p, direction)), depth - 1, world);
+      ray scattered;
+      color attenuation;
+      if (rec.mat->scatter(r, rec, attenuation, scattered)) {
+        return attenuation * ray_color(scattered, depth - 1, world);
+      }
+      return color(0, 0, 0);
     }
 
     vec3 unit_direction = unit_vector(r.direction());
