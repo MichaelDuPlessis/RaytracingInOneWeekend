@@ -48,11 +48,11 @@ class vec3 {
       return e[0] * e[0] + e[1] * e[1] + e[2] * e[2]; 
     }
 
-    static vec3 radnom() {
+    static vec3 random() {
       return vec3(random_double(), random_double(), random_double());
     }
 
-    static vec3 radnom(double min, double max) {
+    static vec3 random(double min, double max) {
       return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
     }
 };
@@ -104,7 +104,7 @@ inline vec3 unit_vector(const vec3& v) {
 
 inline vec3 random_unit_vector() {
   while (true) {
-    auto p = vec3::radnom(-1, 1);
+    auto p = vec3::random(-1, 1);
     auto lensq = p.length_squared();
     if (1e-160 < lensq && lensq <= 1)
       return p / sqrt(lensq);
