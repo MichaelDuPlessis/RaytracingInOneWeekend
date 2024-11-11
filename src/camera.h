@@ -16,6 +16,9 @@ public:
   point3 lookat = point3(0, 0, -1);
   vec3 vup = vec3(0, 1, 0);
 
+  double defocus_angle = 0;
+  double focus_dist = 10;
+
   void render(const hittable &world) {
     initialize();
 
@@ -45,6 +48,8 @@ private:
   vec3 pixel_delta_u;
   vec3 pixel_delta_v;
   vec3 u, v, w;
+  vec3 defocus_disk_u;
+  vec3 defocus_disk_v;
 
   void initialize() {
     // calculate image height from width and aspect ratio
@@ -57,10 +62,9 @@ private:
     center = lookfrom;
 
     // camera
-    auto focal_length = (lookfrom - lookat).length();
     auto theta = degrees_to_radians(vfov);
     auto h = std::tan(theta / 2);
-    auto viewport_height = 2.0 * h * focal_length;
+    auto viewport_height = 2.0 * h * focus_dist;
     auto viewport_width =
         viewport_height * (double(image_width) / image_height);
 
@@ -78,8 +82,13 @@ private:
     pixel_delta_v = viewport_v / image_height;
 
     // location of upper left pixel
-    auto viewport_upper_left = center - (focal_length * w) - viewport_u / 2 - viewport_v / 2;
+    auto viewport_upper_left = center - (focus_dist * w) - viewport_u / 2 - viewport_v / 2;
     pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
+
+    // camera defocus disk basis vectors
+    auto defocus_radius = focus_dist * std::tan(degrees_to_radians(defocus_angle / 2));
+    defocus_disk_u = u * defocus_radius;
+    defocus_disk_v = v * defocus_radius;
   }
 
   ray get_ray(int i, int j) const {
@@ -90,10 +99,15 @@ private:
     auto pixel_sample = pixel00_loc + ((i + offset.x()) * pixel_delta_u) +
                         ((j + offset.y()) * pixel_delta_v);
 
-    auto ray_origin = center;
+    auto ray_origin = defocus_angle <= 0 ? center : defocus_disk_sample();
     auto ray_direction = pixel_sample - ray_origin;
 
     return ray(ray_origin, ray_direction);
+  }
+
+  point3 defocus_disk_sample() const {
+    auto p = random_in_unit_disk();
+    return center + (p[0] * defocus_disk_u) + (p[1] * defocus_disk_v);
   }
 
   vec3 sample_square() const {
